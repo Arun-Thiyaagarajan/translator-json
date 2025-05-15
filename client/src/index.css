@@ -1,0 +1,24 @@
+@import "tailwindcss";
+@plugin "daisyui" {
+  themes: cmyk --default;
+}
+
+:root {
+  font-family: Inter, sans-serif;
+  line-height: 1.5;
+
+  color-scheme: light;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ANT CSS */
+
+.editable-row .ant-form-item-explain {
+  position: absolute;
+  top: 100%;
+  font-size: 12px;
+}
