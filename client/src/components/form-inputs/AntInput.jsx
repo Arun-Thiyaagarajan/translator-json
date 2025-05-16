@@ -1,11 +1,13 @@
 import { Input, Tooltip } from "antd";
 import { CircleHelp } from "lucide-react";
-
+import { MdOutlineContentCopy } from "react-icons/md";
+import { showMessage } from "../../hooks/useAntMessage";
+import { EAntStatusMessage } from "../../enums";
 
 const AntInput = ({
-  label, name, valueChange, value, placeholder, prefix, suffix, addonBefore,
-  shouldRestrictSpace = false, showHelpIcon = false, helpText, helpTextPlacement,
-  disabled=false
+  label, name, valueChange, value='', placeholder, prefix, suffix, addonBefore,
+  shouldRestrictSpace=false, showHelpIcon=false, helpText, helpTextPlacement,
+  disabled=false, showCopy=false
 }) => {
   const handleChange = (e) => {
     valueChange(e.target.value);
@@ -16,6 +18,32 @@ const AntInput = ({
       e.preventDefault();
     }
   }
+
+  // Clipboard copy logic
+  const handleCopy = async () => {
+    if (value) {
+      try {
+        await navigator.clipboard.writeText(value.trim());
+        showMessage(EAntStatusMessage.SUCCESS, 'Copied Successfully')
+      } catch (err) {
+        showMessage(EAntStatusMessage.ERROR, 'Copy failed')
+      }
+    }
+  };
+  
+  const computedSuffix = showCopy && !disabled ? (
+    <span className="copy-icon-wrapper">
+      <Tooltip title='Copy to Clipboard'>
+        <span
+          onClick={handleCopy}
+          style={{ visibility: value ? 'visible' : 'hidden', cursor: value ? 'pointer' : 'default' }}
+        >
+          <MdOutlineContentCopy className="text-primary" />
+        </span>
+      </Tooltip>
+    </span>
+  ) : suffix;
+  
 
   return (
     <div className="form-group w-full">
@@ -34,7 +62,7 @@ const AntInput = ({
           addonBefore={addonBefore || ''}
           placeholder={placeholder || ''}
           prefix={prefix || ''}
-          suffix={suffix || ''}
+          suffix={computedSuffix}
           disabled={disabled}
           value={value}
           onChange={handleChange}

@@ -1,7 +1,4 @@
 @import "tailwindcss";
-@plugin "daisyui" {
-  themes: cmyk --default;
-}
 
 :root {
   font-family: Inter, sans-serif;
@@ -16,9 +13,15 @@
 }
 
 /* ANT CSS */
-
 .editable-row .ant-form-item-explain {
   position: absolute;
   top: 100%;
   font-size: 12px;
+}
+
+
+
+/* Daisy UI Config */
+@plugin "daisyui" {
+  themes: cmyk --default;
 }

@@ -1,9 +1,10 @@
 import Translation from "../models/Translation.js";
 import { translationClient, targetLangs } from "../config/translateCient.js";
+import { StatusCodes } from "http-status-codes";
 
-export const translateText = async (req, res) => {
+const translateText = async (req, res) => {
   const { text } = req.body;
-  if (!text) return res.status(400).json({ error: "Text is required." });
+  if (!text) return res.status(StatusCodes.BAD_REQUEST).json({ error: "Text is required." });
 
   try {
     const translations = {};
@@ -11,26 +12,88 @@ export const translateText = async (req, res) => {
       const [translated] = await translationClient.translate(text, langCode);
       translations[langCode] = translated;
     }
-    res.json({ original: text, translations });
+    res.status(StatusCodes.CREATED).json({ original: text, translations });
   } catch (err) {
-    res.status(500).json({ error: "Translation failed." });
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: "Translation failed." });
   }
 };
 
-export const saveTranslation = async (req, res) => {
+const saveTranslation = async (req, res) => {
   try {
-    const saved = await Translation.create(req.body);
-    res.status(201).json(saved);
+    await Translation.create(req.body);
+    res.status(StatusCodes.CREATED).json({ message: 'Saved Successfully' });
   } catch (err) {
-    res.status(500).json({ error: "Saving failed." });
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: "Saving failed." });
   }
 };
 
-export const getAllTranslations = async (req, res) => {
+const updateTranslation = async (req, res) => {
   try {
-    const data = await Translation.find().sort({ createdAt: -1 });
-    res.json(data);
-  } catch (err) {
-    res.status(500).json({ error: "Fetch failed." });
+    const { updatedData } = req.body;
+    const { id } = req.params;
+
+    if (!id || !updatedData) {
+      return res.status(StatusCodes.NOT_FOUND).json({ message: "Data Not Found" });
+    }
+
+    const updatedTranslation = await Translation.findByIdAndUpdate(
+      id,
+      { $set: updatedData },
+      { new: true, runValidators: true }
+    );
+
+    if (!updatedTranslation) {
+      return res.status(StatusCodes.NOT_FOUND).json({ message: "Translation not found" });
+    }
+
+    res.status(StatusCodes.OK).json({
+      message: "Translation updated successfully",
+      data: updatedTranslation,
+    });
+  } catch (error) {
+    console.error("Error updating translation:", error);
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Server error", error: error.message });
   }
 };
+
+const deleteTranslation = async (req, res) => {
+  const { id } = req.params;
+
+  const deletedData = await Translation.findByIdAndDelete(id);
+
+  if (!deletedData) {
+    return res.status(StatusCodes.NOT_FOUND).json({ message: "Data Not Found" });
+  }
+
+  res.status(StatusCodes.OK).json({ msg: "Success! Data removed." });
+};
+
+
+const getAllTranslations = async (req, res) => {
+  try {
+    const data = await Translation.find({}, "-createdAt -updatedAt -__v").sort({ createdAt: -1 });
+
+    const formattedData = data.map((doc) => ({
+      id: doc._id,
+      key: doc.key,
+      en: doc.en,
+      ta: doc.ta,
+      hi: doc.hi,
+      te: doc.te,
+      kn: doc.kn,
+      ml: doc.ml,
+    }));
+
+    res.json(formattedData);
+  } catch (err) {
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: "Fetch failed." });
+  }
+};
+
+export {
+  translateText,
+  saveTranslation,
+  updateTranslation,
+  deleteTranslation,
+  getAllTranslations
+}

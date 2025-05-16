@@ -1,12 +1,15 @@
 import { Form } from "react-router-dom";
 import { AntInput, CustomButton } from "./form-inputs";
-import { useRef, useState } from "react";
-import axios from "axios";
-import { Spin } from "antd"; // Import Ant Design's Spin component
-import { EAntStatusMessage } from "../enums";
+import { useEffect, useRef, useState } from "react";
+import { Spin } from "antd";
+import { EAntStatusMessage, ELanguages } from "../enums";
 import { showMessage } from "../hooks/useAntMessage";
+import { useDispatch, useSelector } from "react-redux";
+import { addTranslations, fetchTranslations, translateIt, updateTranslations } from "../store/translationThunks";
 
 const InputForm = () => {
+  const selected = useSelector((state) => state.translations.selectedTranslation);
+  
   const [key, setKey] = useState(localStorage.getItem('Translation_Key') || '');
   const [isTranslated, setIsTranslated] = useState(false);
 
@@ -19,43 +22,61 @@ const InputForm = () => {
 
   const [loading, setLoading] = useState(false);
   const formRef = useRef();
+  const dispatch = useDispatch();
 
   const onTranslate = async (event) => {
     event.preventDefault();
 
-    if (!englishTranslate.trim()) return; // Don't submit if English is empty
+    if (!englishTranslate.trim()) return;
+    const textData = { text: englishTranslate.trim() }
+    
+    setLoading(true);
+    dispatch(translateIt(textData))
+      .unwrap()
+      .then((response) => {
+        setLoading(false);
+        setIsTranslated(true);
 
-    setLoading(true); // Set loading to true when the request starts
-    try {
-      const response = await axios.post("http://localhost:5001/translate", {
-        text: englishTranslate.trim(),
+        if (response.translations) {
+          setTamilTranslate(response.translations.ta || '');
+          setMalayalamTranslate(response.translations.ml || '');
+          setTeluguTranslate(response.translations.te || '');
+          setKannadaTranslate(response.translations.kn || '');
+          setHindiTranslate(response.translations.hi || '');
+        }
+        showMessage(EAntStatusMessage.SUCCESS, 'Translation Success');    
+      })
+      .catch((error) => {
+        setLoading(false);
+        showMessage(EAntStatusMessage.ERROR, `Translation API error: ${error}`);
       });
-      
-      setIsTranslated(true);
-
-      const data = response.data;
-      if (data.translations) {
-        setTamilTranslate(data.translations.ta || '');
-        setMalayalamTranslate(data.translations.ml || '');
-        setTeluguTranslate(data.translations.te || '');
-        setKannadaTranslate(data.translations.kn || '');
-        setHindiTranslate(data.translations.hi || '');
-      }
-
-      showMessage(EAntStatusMessage.SUCCESS, 'Translation Success');
-    } catch (error) {
-      showMessage(EAntStatusMessage.ERROR, `Translation API error: ${error}`);
-    } finally {
-      setLoading(false); // Set loading to false after the request finishes
-    }
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    const formData = new FormData(event.target);
+    const data = Object.fromEntries(formData);
 
-    resetForm();
-    showMessage('success', 'Test');
-  }
+    setLoading(true);
+
+    const action = selected
+      ? updateTranslations({ id: selected.id, updatedData: data })
+      : addTranslations(data);
+
+    dispatch(action)
+      .unwrap()
+      .then((res) => {
+        setLoading(false);
+        resetForm();
+        const message = res?.message || (selected ? 'Updated Successfully' : 'Saved Successfully');
+        showMessage(EAntStatusMessage.SUCCESS, message);
+        fetchTranslate();
+      })
+      .catch((error) => {
+        setLoading(false);
+        showMessage(EAntStatusMessage.ERROR, `${selected ? 'Update' : 'Save'} Failed: ${error}`);
+      });
+  };  
 
   // Clear input fields
   const resetForm = () => {
@@ -71,7 +92,31 @@ const InputForm = () => {
 
     localStorage.removeItem('Translation_Key');
     localStorage.removeItem('EN_Translation');
+
+    dispatch({ type: 'translations/clearSelected' });
   }
+
+  const fetchTranslate = () => {
+    dispatch(fetchTranslations())
+      .unwrap()
+      .then()
+      .catch((err) => {
+        showMessage(EAntStatusMessage.ERROR, `Failed to fetch latest: ${err}`);
+      });
+  }
+
+  useEffect(() => {
+    if (selected) {
+      setKey(selected.key || '');
+      setEnglishTranslate(selected.en || '');
+      setTamilTranslate(selected.ta || '');
+      setHindiTranslate(selected.hi || '');
+      setMalayalamTranslate(selected.ml || '');
+      setTeluguTranslate(selected.te || '');
+      setKannadaTranslate(selected.kn || '');
+      setIsTranslated(true);
+    }
+  }, [selected])
 
   return (
     <div className="w-full space-y-5 relative">
@@ -99,12 +144,13 @@ const InputForm = () => {
               showHelpIcon={true}
               helpText="Space is not allowed"
               helpTextPlacement="right"
+              showCopy={true}
             />
           </div>
 
           <div className="col-span-3">
             <AntInput
-              label="English"
+              label={ELanguages.english}
               name="en"
               value={englishTranslate}
               valueChange={(value) => {
@@ -112,61 +158,67 @@ const InputForm = () => {
                 localStorage.setItem('EN_Translation', value)
               }}
               placeholder="English Translation"
+              showCopy={true}
             />
           </div>
 
           <div className="col-span-3">
             <AntInput
-              label="Tamil (தமிழ்)"
+              label={ELanguages.tamil}
               name="ta"
               disabled={!isTranslated}
               value={tamilTranslate}
               valueChange={setTamilTranslate}
               placeholder="Tamil Translation"
+              showCopy={true}
             />
           </div>
 
           <div className="col-span-3">
             <AntInput
-              label="Malayalam (മലയാളം)"
+              label={ELanguages.malayalam}
               name="ml"
               disabled={!isTranslated}
               value={malayalamTranslate}
               valueChange={setMalayalamTranslate}
               placeholder="Malayalam Translation"
+              showCopy={true}
             />
           </div>
 
           <div className="col-span-3">
             <AntInput
-              label="Telugu (తెలుగు)"
+              label={ELanguages.telugu}
               name="te"
               disabled={!isTranslated}
               value={teluguTranslate}
               valueChange={setTeluguTranslate}
               placeholder="Telugu Translation"
+              showCopy={true}
             />
           </div>
 
           <div className="col-span-3">
             <AntInput
-              label="Kannada (ಕನ್ನಡ)"
+              label={ELanguages.kannada}
               name="kn"
               disabled={!isTranslated}
               value={kannadaTranslate}
               valueChange={setKannadaTranslate}
               placeholder="Kannada Translation"
+              showCopy={true}
             />
           </div>
 
           <div className="col-span-3">
             <AntInput
-              label="Hindi (हिंदी)"
+              label={ELanguages.hindi}
               name="hi"
               disabled={!isTranslated}
               value={hindiTranslate}
               valueChange={setHindiTranslate}
               placeholder="Hindi Translation"
+              showCopy={true}
             />
           </div>
         </div>
@@ -177,15 +229,28 @@ const InputForm = () => {
             size="btn-md"
             type="button"
             onClick={onTranslate}
+            // statusText="Translating"
+            color='text-white'
             disabled={loading || !englishTranslate}
           />
           {isTranslated &&
             <CustomButton
+              text={selected ? 'Update' : 'Add'}
               size="md:btn-md"
               bgcolor="btn-neutral"
+              color='text-white'
               disabled={loading || key === ''}
           />
           }
+          {selected && (
+            <CustomButton
+              text="Cancel Edit"
+              size="btn-md"
+              bgcolor="btn-info btn-outline"
+              onClick={resetForm}
+            />
+          )}
+
         </div>
       </Form>
     </div>
