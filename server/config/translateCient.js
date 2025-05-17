@@ -1,11 +1,15 @@
 import { v2 as translate } from "@google-cloud/translate";
-import dotenv from "dotenv";
+import { config } from "dotenv";
 
-dotenv.config();
+config();
 
-// Create Translate client with service account
+const base64String = process.env.GOOGLE_SERVICE_ACCOUNT_JSON_B64;
+const jsonString = Buffer.from(base64String, "base64").toString("utf-8");
+const serviceAccount = JSON.parse(jsonString);
+
 export const translationClient = new translate.Translate({
-  keyFilename: process.env.GOOGLE_APPLICATION_CREDENTIALS,
+  credentials: serviceAccount,
+  projectId: serviceAccount.project_id,
 });
 
 export const targetLangs = {
