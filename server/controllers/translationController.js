@@ -20,8 +20,18 @@ const translateText = async (req, res) => {
 
 const saveTranslation = async (req, res) => {
   try {
+    const { key } = req.body;
+
+    const existing = await Translation.findOne({ key });
+    if (existing) {
+      return res.status(StatusCodes.CONFLICT).json({
+        message: `Translation key "${key}" already exists.`,
+      });
+    }
+
     await Translation.create(req.body);
-    res.status(StatusCodes.CREATED).json({ message: 'Saved Successfully' });
+
+    res.status(StatusCodes.CREATED).json({ message: "Saved Successfully" });
   } catch (err) {
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: "Saving failed." });
   }
@@ -48,7 +58,6 @@ const updateTranslation = async (req, res) => {
 
     res.status(StatusCodes.OK).json({
       message: "Translation updated successfully",
-      data: updatedTranslation,
     });
   } catch (error) {
     console.error("Error updating translation:", error);

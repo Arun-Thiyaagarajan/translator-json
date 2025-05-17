@@ -12,6 +12,7 @@ const InputForm = () => {
   
   const [key, setKey] = useState(localStorage.getItem('Translation_Key') || '');
   const [isTranslated, setIsTranslated] = useState(false);
+  const [isTranslating, setIsTranslating] = useState(false);
 
   const [englishTranslate, setEnglishTranslate] = useState(localStorage.getItem('EN_Translation') || '');
   const [tamilTranslate, setTamilTranslate] = useState('');
@@ -30,11 +31,11 @@ const InputForm = () => {
     if (!englishTranslate.trim()) return;
     const textData = { text: englishTranslate.trim() }
     
-    setLoading(true);
+    setIsTranslating(true);
     dispatch(translateIt(textData))
       .unwrap()
       .then((response) => {
-        setLoading(false);
+        setIsTranslating(false);
         setIsTranslated(true);
 
         if (response.translations) {
@@ -47,7 +48,7 @@ const InputForm = () => {
         showMessage(EAntStatusMessage.SUCCESS, 'Translation Success');    
       })
       .catch((error) => {
-        setLoading(false);
+        setIsTranslating(false);
         showMessage(EAntStatusMessage.ERROR, `Translation API error: ${error}`);
       });
   };
@@ -225,18 +226,21 @@ const InputForm = () => {
 
         <div className="w-full flex flex-col md:flex-row justify-center items-center gap-3">
           <CustomButton
-            text="translate"
-            size="btn-md"
+            text="Translate"
+            size="w-full sm:w-auto"
             type="button"
             onClick={onTranslate}
-            // statusText="Translating"
+            isLoading={isTranslating}
+            statusText="Translating"
             color='text-white'
-            disabled={loading || !englishTranslate}
+            disabled={isTranslating || !englishTranslate}
           />
           {isTranslated &&
             <CustomButton
               text={selected ? 'Update' : 'Add'}
-              size="md:btn-md"
+              statusText={selected ? 'Updating' : 'Adding'}
+              isLoading={loading}
+              size="w-full sm:w-auto"
               bgcolor="btn-neutral"
               color='text-white'
               disabled={loading || key === ''}
@@ -245,7 +249,7 @@ const InputForm = () => {
           {selected && (
             <CustomButton
               text="Cancel Edit"
-              size="btn-md"
+              size="w-full sm:w-auto"
               bgcolor="btn-info btn-outline"
               onClick={resetForm}
             />

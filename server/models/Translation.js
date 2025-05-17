@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const TranslationSchema = new mongoose.Schema(
   {
-    key: String,
+    key: { type: String, required: true, unique: true },
     en: String,
     ta: String,
     hi: String,

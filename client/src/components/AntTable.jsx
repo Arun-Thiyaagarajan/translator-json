@@ -12,6 +12,17 @@ import { showMessage } from "../hooks/useAntMessage";
 const AntTable = () => {
   const dispatch = useDispatch();
 
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [isEditInfoLocal, setIsEditInfoLocal] = useState(() => {
+    try {
+      const storedValue = localStorage.getItem('EditInfo');
+      return storedValue !== null ? JSON.parse(storedValue) : false;
+    } catch (e) {
+      console.warn("Failed to parse EditInfo from localStorage:", e);
+      return false;
+    }
+  });
+  
   const [searchText, setSearchText] = useState('');
   const [searchedColumn, setSearchedColumn] = useState('');
   const searchInput = useRef(null);
@@ -38,22 +49,22 @@ const AntTable = () => {
   };
 
   const handleDelete = (data) => {
+    setIsDeleting(true);
     dispatch(deleteTranslations({ id: data.id }))
       .unwrap()
       .then((response) => {
+        setIsDeleting(false);
         dispatch(fetchTranslations());
         showMessage(EAntStatusMessage.SUCCESS, (response.message || 'Deleted Successfully'))
       })
       .catch((error) => {
+        setIsDeleting(false);
         showMessage(EAntStatusMessage.ERROR, (error.message || 'Delete Failed'))
       });
   }
 
   useEffect(() => {
     dispatch(fetchTranslations());
-    if (window.screen.width <= 767) {
-      console.log(window.screen.width)
-    }
   }, [dispatch]);
 
   const { translationsData, loading } = useSelector((state) => state.translations);
@@ -167,13 +178,23 @@ const AntTable = () => {
 
   return (
     <div className='flex flex-col gap-y-2'>
-      <div className='flex md:justify-end'>
-        <Alert message="Double-click a row to edit it." type="warning" showIcon closable />
-      </div>
+      {!isEditInfoLocal &&
+        <div className='flex md:justify-end'>
+          <Alert
+            message="Double-click a row to edit it."
+            type="info"
+            showIcon
+            closable
+            onClose={() => {
+              setIsEditInfoLocal(true);
+              localStorage.setItem('EditInfo', true)
+            }} />
+        </div>
+      }
       <div className='overflow-x-auto'>
         <Table
           columns={columns}
-          loading={loading}
+          loading={loading || isDeleting}
           dataSource={translationsData}
           scroll={{ x: 1500 }}
           pagination={{
