@@ -16,6 +16,16 @@ const AntTable = () => {
   const [searchedColumn, setSearchedColumn] = useState('');
   const searchInput = useRef(null);
 
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 767);
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 767);
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
     confirm();
     setSearchText(selectedKeys[0]);
@@ -131,7 +141,7 @@ const AntTable = () => {
       sorter: stringSorter("key"),
       sortDirections: ["descend", "ascend"],
     }),
-    Object.assign(Object.assign({ title: "English", dataIndex: "en", key: "en", fixed: "left" }, getColumnSearchProps("en")), {
+    Object.assign(Object.assign({ title: "English", dataIndex: "en", key: "en", fixed: !isMobile ? "left" : undefined }, getColumnSearchProps("en")), {
       sorter: stringSorter("en"),
       sortDirections: ["descend", "ascend"],
     }),
@@ -160,7 +170,7 @@ const AntTable = () => {
       <div className='flex md:justify-end'>
         <Alert message="Double-click a row to edit it." type="warning" showIcon closable />
       </div>
-      <div>
+      <div className='overflow-x-auto'>
         <Table
           columns={columns}
           loading={loading}
