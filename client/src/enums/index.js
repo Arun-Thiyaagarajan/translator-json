@@ -9,8 +9,17 @@ export const EAntStatusMessage = {
 export const ELanguages = {
   english: "English",
   tamil: "Tamil (தமிழ்)",
-  hindi: "Hindi (हिंदी)",
+  malayalam: "Malayalam (മലയാളം)",
   telugu: "Telugu (తెలుగు)",
   kannada: "Kannada (ಕನ್ನಡ)",
-  malayalam: "Malayalam (മലയാളം)",
+  hindi: "Hindi (हिंदी)",
+};
+
+export const ELanguageKeys = {
+  english: "en",
+  tamil: "ta",
+  malayalam: "ml",
+  telugu: "te",
+  kannada: "kn",
+  hindi: "hi",
 };

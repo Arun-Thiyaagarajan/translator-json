@@ -1,7 +1,7 @@
 import { Input, Tooltip } from "antd";
 import { CircleHelp } from "lucide-react";
 import { MdOutlineContentCopy } from "react-icons/md";
-import { showMessage } from "../../hooks/useAntMessage";
+import { useAntMessage } from "../../hooks/useAntMessage";
 import { EAntStatusMessage } from "../../enums";
 
 const AntInput = ({
@@ -9,6 +9,8 @@ const AntInput = ({
   shouldRestrictSpace=false, showHelpIcon=false, helpText, helpTextPlacement,
   disabled=false, showCopy=false
 }) => {
+  const { showMessage } = useAntMessage();
+  
   const handleChange = (e) => {
     valueChange(e.target.value);
   };

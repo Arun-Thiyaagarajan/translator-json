@@ -1,6 +1,6 @@
 
 const CustomButton = ({
-  text = 'submit', statusText, size, icon: Icon, type = "submit",
+  text='', statusText, size, icon: Icon, type = "button",
   disabled = false, bgcolor, onClick, otherClasses='', color, isLoading=false
 }) => {
 
@@ -15,8 +15,8 @@ const CustomButton = ({
       {
         isLoading ? (
           <>
-            <span className="loading loading-spinner"></span>
-            {statusText}...
+            <span className="loading loading-spinner loading-sm"></span>
+            {statusText ? `${statusText}...` : ''}
           </>
         ) : (
             <>

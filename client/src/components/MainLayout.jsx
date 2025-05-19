@@ -1,18 +1,9 @@
 import { Divider } from "antd";
 import AntTable from "./AntTable";
 import InputForm from "./InputForm";
-import { useDispatch } from "react-redux";
-import { useEffect } from "react";
-import { fetchTranslations } from "../store/translationThunks";
 import { Languages } from "lucide-react";
 
 const MainLayout = () => {
-  const dispatch = useDispatch();
-
-  useEffect(() => {
-    dispatch(fetchTranslations());
-  }, [dispatch]);
-
   return (
     <div className="p-5 min-h-screen">
       <div className="grid grid-cols-12 gap-y-5">

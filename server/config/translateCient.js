@@ -19,3 +19,12 @@ export const targetLangs = {
   kn: "Kannada",
   ml: "Malayalam",
 };
+
+export const langKeys = {
+  en: "en",
+  ta: "ta",
+  hi: "hi",
+  te: "te",
+  kn: "kn",
+  ml: "ml",
+};

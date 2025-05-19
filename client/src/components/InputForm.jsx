@@ -3,13 +3,16 @@ import { AntInput, CustomButton } from "./form-inputs";
 import { useEffect, useRef, useState } from "react";
 import { Spin } from "antd";
 import { EAntStatusMessage, ELanguages } from "../enums";
-import { showMessage } from "../hooks/useAntMessage";
+// import { showMessage } from "../hooks/useAntMessage";
 import { useDispatch, useSelector } from "react-redux";
 import { addTranslations, fetchTranslations, translateIt, updateTranslations } from "../store/translationThunks";
+import { useAntMessage } from "../hooks/useAntMessage";
 
 const InputForm = () => {
   const selected = useSelector((state) => state.translations.selectedTranslation);
   
+  const { showMessage } = useAntMessage();
+
   const [key, setKey] = useState(localStorage.getItem('Translation_Key') || '');
   const [isTranslated, setIsTranslated] = useState(false);
   const [isTranslating, setIsTranslating] = useState(false);
@@ -224,11 +227,10 @@ const InputForm = () => {
           </div>
         </div>
 
-        <div className="w-full flex flex-col md:flex-row justify-center items-center gap-3">
+        <div className="w-full flex flex-col sm:flex-row justify-center items-center gap-3">
           <CustomButton
             text="Translate"
             size="w-full sm:w-auto"
-            type="button"
             onClick={onTranslate}
             isLoading={isTranslating}
             statusText="Translating"
@@ -237,6 +239,7 @@ const InputForm = () => {
           />
           {isTranslated &&
             <CustomButton
+              type="submit"
               text={selected ? 'Update' : 'Add'}
               statusText={selected ? 'Updating' : 'Adding'}
               isLoading={loading}
@@ -249,12 +252,12 @@ const InputForm = () => {
           {selected && (
             <CustomButton
               text="Cancel Edit"
+              color="hover:text-white"
               size="w-full sm:w-auto"
               bgcolor="btn-info btn-outline"
               onClick={resetForm}
             />
           )}
-
         </div>
       </Form>
     </div>

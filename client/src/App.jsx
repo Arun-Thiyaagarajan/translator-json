@@ -1,16 +1,16 @@
 import { RouterProvider } from "react-router-dom";
 import router from "./routes/Router";
-import { useAntMessage } from "./hooks/useAntMessage";
+import { AntMessageProvider } from "./hooks/useAntMessage";
+import { CustomAlertProvider } from "./hooks/useCustomAlert";
 
 const App = () => {
-  const { contextHolder } = useAntMessage();
-
   return (
-    <>
-      {contextHolder}  {/* Ant Design message holder */}
-      <RouterProvider router={router} />
-    </>
+    <AntMessageProvider>
+      <CustomAlertProvider>
+        <RouterProvider router={router} />
+      </CustomAlertProvider>
+    </AntMessageProvider>
   );
-}
+};
 
 export default App;

@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { translateText, saveTranslation, getAllTranslations, updateTranslation, deleteTranslation } from "../controllers/translationController.js";
+import { translateText, saveTranslation, getAllTranslations, updateTranslation, deleteTranslation, downloadJSON } from "../controllers/translationController.js";
 
 const router = Router();
 
@@ -12,5 +12,7 @@ router
   .route("/translations/:id")
   .patch(updateTranslation)
   .delete(deleteTranslation);
+
+router.post("/json-download", downloadJSON);
 
 export default router;

@@ -10,6 +10,9 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  /* colors */
+  --text-highlight-color: #ffc069;
 }
 
 /* ANT CSS */

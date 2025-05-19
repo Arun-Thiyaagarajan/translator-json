@@ -51,10 +51,34 @@ const deleteTranslations = createAsyncThunk(
   }
 });
 
+const downloadJSON = createAsyncThunk("downloadJSON", async (key, { rejectWithValue }) => {
+  try {
+    const response = await apiClient.post(
+      "/json-download",
+      { key },
+      { responseType: "blob" }
+    );
+
+    // Trigger download
+    const blob = new Blob([response.data], { type: "application/json" });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = key.key === "all" ? "translations.zip" : `${key.key}.json`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    window.URL.revokeObjectURL(url);
+  } catch (error) {
+    return rejectWithValue(error.response?.data?.message || "Failed to download");
+  }
+});
+
 export {
   translateIt,
   fetchTranslations,
   addTranslations,
   updateTranslations,
-  deleteTranslations
+  deleteTranslations,
+  downloadJSON,
 };
