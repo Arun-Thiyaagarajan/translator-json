@@ -149,6 +149,7 @@ const InputForm = () => {
               For example, using 'aadhaarCard' will show the text in the selected language automatically. Make sure, space are not allowed."
               helpTextPlacement="right"
               showCopy={true}
+              disabled={isTranslating || loading}
             />
           </div>
 
@@ -163,6 +164,7 @@ const InputForm = () => {
               }}
               placeholder="English Translation"
               showCopy={true}
+              disabled={isTranslating || loading}
             />
           </div>
 
@@ -170,7 +172,7 @@ const InputForm = () => {
             <AntInput
               label={ELanguages.tamil}
               name="ta"
-              disabled={!isTranslated}
+              disabled={!isTranslated || isTranslating || loading}
               value={tamilTranslate}
               valueChange={setTamilTranslate}
               placeholder="Tamil Translation"
@@ -182,7 +184,7 @@ const InputForm = () => {
             <AntInput
               label={ELanguages.malayalam}
               name="ml"
-              disabled={!isTranslated}
+              disabled={!isTranslated || isTranslating || loading}
               value={malayalamTranslate}
               valueChange={setMalayalamTranslate}
               placeholder="Malayalam Translation"
@@ -194,7 +196,7 @@ const InputForm = () => {
             <AntInput
               label={ELanguages.telugu}
               name="te"
-              disabled={!isTranslated}
+              disabled={!isTranslated || isTranslating || loading}
               value={teluguTranslate}
               valueChange={setTeluguTranslate}
               placeholder="Telugu Translation"
@@ -206,7 +208,7 @@ const InputForm = () => {
             <AntInput
               label={ELanguages.kannada}
               name="kn"
-              disabled={!isTranslated}
+              disabled={!isTranslated || isTranslating || loading}
               value={kannadaTranslate}
               valueChange={setKannadaTranslate}
               placeholder="Kannada Translation"
@@ -218,7 +220,7 @@ const InputForm = () => {
             <AntInput
               label={ELanguages.hindi}
               name="hi"
-              disabled={!isTranslated}
+              disabled={!isTranslated || isTranslating || loading}
               value={hindiTranslate}
               valueChange={setHindiTranslate}
               placeholder="Hindi Translation"
