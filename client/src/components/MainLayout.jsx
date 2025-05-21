@@ -1,7 +1,7 @@
 import { Divider } from "antd";
-import AntTable from "./AntTable";
-import InputForm from "./InputForm";
 import { Languages } from "lucide-react";
+import AntTable from "@components/AntTable";
+import InputForm from "@components/InputForm";
 
 const MainLayout = () => {
   return (

@@ -1,6 +1,6 @@
 
 const CustomButton = ({
-  text='', statusText, size, icon: Icon, type = "button",
+  text="", statusText, size, icon: Icon, type = "button", title="",
   disabled = false, bgcolor, onClick, otherClasses='', color, isLoading=false
 }) => {
 
@@ -8,6 +8,7 @@ const CustomButton = ({
     <button
       type={type}
       onClick={onClick}
+      title={title ?? text}
       className={
         `btn ${bgcolor ?? 'btn-primary'} ${size ?? ''} capitalize ${color ?? ''} transition duration-300 hover:opacity-75 ${otherClasses}`
       }

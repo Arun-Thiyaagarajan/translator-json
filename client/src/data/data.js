@@ -1,5 +1,5 @@
 import { nanoid } from "@reduxjs/toolkit";
-import { ELanguages } from "../enums";
+import { ELanguages } from "@enums/index";
 
 export const languages = [
   {

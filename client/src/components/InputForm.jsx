@@ -1,12 +1,11 @@
-import { Form } from "react-router-dom";
-import { AntInput, CustomButton } from "./form-inputs";
 import { useEffect, useRef, useState } from "react";
-import { Spin } from "antd";
-import { EAntStatusMessage, ELanguages } from "../enums";
-// import { showMessage } from "../hooks/useAntMessage";
+import { Form } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { addTranslations, fetchTranslations, translateIt, updateTranslations } from "../store/translationThunks";
-import { useAntMessage } from "../hooks/useAntMessage";
+import { Spin } from "antd";
+import { AntInput, CustomButton } from "@components/form-inputs/index";
+import { EAntStatusMessage, ELanguages } from "@enums/index";
+import { addTranslations, fetchTranslations, translateIt, updateTranslations } from "@store/translationThunks";
+import { useAntMessage } from "@hooks/useAntMessage";
 
 const InputForm = () => {
   const selected = useSelector((state) => state.translations.selectedTranslation);
@@ -146,7 +145,8 @@ const InputForm = () => {
               placeholder="Enter the Key"
               shouldRestrictSpace={true}
               showHelpIcon={true}
-              helpText="Space is not allowed"
+              helpText="A unique key used in the code to switch between translations. 
+              For example, using 'aadhaarCard' will show the text in the selected language automatically. Make sure, space are not allowed."
               helpTextPlacement="right"
               showCopy={true}
             />

@@ -1,7 +1,7 @@
 import { RouterProvider } from "react-router-dom";
-import router from "./routes/Router";
-import { AntMessageProvider } from "./hooks/useAntMessage";
-import { CustomAlertProvider } from "./hooks/useCustomAlert";
+import { AntMessageProvider } from "@hooks/useAntMessage";
+import { CustomAlertProvider } from "@hooks/useCustomAlert";
+import router from "@routes/Router";
 
 const App = () => {
   return (

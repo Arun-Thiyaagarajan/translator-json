@@ -1,5 +1,5 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import apiClient from "../services/api.js"; // Use your custom axios instance
+import apiClient from "@services/api";
 
 const translateIt = createAsyncThunk(
   "translateIt", async (text, { rejectWithValue }) => {

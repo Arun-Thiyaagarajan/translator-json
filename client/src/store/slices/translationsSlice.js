@@ -1,6 +1,6 @@
 // slices/translationsSlice.js
 import { createSlice } from "@reduxjs/toolkit";
-import { fetchTranslations } from "../translationThunks.js";
+import { fetchTranslations } from "@store/translationThunks";
 
 const translationsSlice = createSlice({
   name: "translations",

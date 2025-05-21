@@ -1,22 +1,20 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { SearchOutlined } from '@ant-design/icons';
-import { Alert, Button, Input, Popconfirm, Space, Table } from 'antd';
 import Highlighter from 'react-highlight-words';
 import { useDispatch, useSelector } from 'react-redux';
-import { setSelectedTranslation } from '../store/slices/translationsSlice';
+import { SearchOutlined } from '@ant-design/icons';
 import { Download, SquarePen, Trash } from 'lucide-react';
-import { EAntStatusMessage, ELanguageKeys, ELanguages } from '../enums';
-import { deleteTranslations, downloadJSON, fetchTranslations } from '../store/translationThunks';
-import { CustomButton } from './form-inputs';
-import DaisyModal from './DaisyModal';
-import { languages } from '../data/data';
-import { useAntMessage } from '../hooks/useAntMessage';
-import { useCustomAlert } from '../hooks/useCustomAlert';
+import { Alert, Button, Input, Popconfirm, Space, Table } from 'antd';
+import { setSelectedTranslation } from '@store/slices/translationsSlice';
+import { deleteTranslations, downloadJSON, fetchTranslations } from '@store/translationThunks';
+import { EAntStatusMessage, ELanguageKeys, ELanguages } from '@enums/index';
+import { CustomButton } from '@components/form-inputs/index';
+import DaisyModal from '@components/DaisyModal';
+import { languages } from '@data/data';
+import { useAntMessage, useCustomAlert } from '@hooks/index';
 
 const AntTable = () => {
   const dispatch = useDispatch();
   const { showMessage } = useAntMessage();
-  const { showAlert } = useCustomAlert();
 
   const [isDeleting, setIsDeleting] = useState(false);
   const [downloadingKey, setDownloadingKey] = useState(null);
@@ -271,6 +269,7 @@ const AntTable = () => {
               <CustomButton
                 size="btn-sm"
                 type="button"
+                title={`Download All Languages JSON as ZIP`}
                 color="hover:text-white"
                 icon={Download}
                 otherClasses="btn-outline"
@@ -290,6 +289,7 @@ const AntTable = () => {
                       size="btn-sm"
                       color="hover:text-white"
                       type="button"
+                      title={`Download ${language.lang} JSON file`}
                       icon={Download}
                       otherClasses="btn-outline"
                       onClick={() => handleDownload(language.key)}
