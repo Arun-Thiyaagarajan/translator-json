@@ -108,7 +108,7 @@ const getAllTranslations = async (req, res) => {
 
 const downloadJSON = async (req, res) => {
   try {
-    const { key } = req.body.key;
+    const { key } = req.body;
 
     const translations = await Translation.find({}, "-_id -__v -createdAt -updatedAt");
 
@@ -118,45 +118,16 @@ const downloadJSON = async (req, res) => {
 
     // Case 1: Download all
     if (key === "all") {
-      const tempDir = path.join(__dirname, "../temp-downloads");
+      const allLangData = {};
 
-      // Create folder if not exists
-      if (!fs.existsSync(tempDir)) {
-        fs.mkdirSync(tempDir);
-      }
-
-      // Write one file per language
       for (const lang of Object.keys(langKeys)) {
-        const langData = {};
+        allLangData[lang] = {};
         translations.forEach((item) => {
-          langData[item.key] = item[lang];
+          allLangData[lang][item.key] = item[lang];
         });
-
-        const filePath = path.join(tempDir, `${lang}.json`);
-        fs.writeFileSync(filePath, JSON.stringify(langData, null, 2), "utf-8");
       }
 
-      // Send the folder as a zip file
-      const archiver = await import("archiver");
-      const archive = archiver.default("zip", { zlib: { level: 9 } });
-      const zipPath = path.join(tempDir, "all-translations.zip");
-      const output = fs.createWriteStream(zipPath);
-
-      archive.pipe(output);
-
-      Object.keys(langKeys).forEach((lang) => {
-        const filePath = path.join(tempDir, `${lang}.json`);
-        archive.file(filePath, { name: `${lang}.json` });
-      });
-
-      await archive.finalize();
-
-      output.on("close", () => {
-        res.download(zipPath, "translations.zip", () => {
-          // Clean up
-          fs.rmSync(tempDir, { recursive: true, force: true });
-        });
-      });
+      return res.status(StatusCodes.OK).json(allLangData);
     } else {
       // Case 2: Single language
       if (!langKeys[key]) {

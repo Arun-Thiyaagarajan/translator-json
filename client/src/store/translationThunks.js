@@ -1,5 +1,7 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import apiClient from "@services/api";
+import JSZip from "jszip";
+import { saveAs } from "file-saver";
 
 const translateIt = createAsyncThunk(
   "translateIt", async (text, { rejectWithValue }) => {
@@ -51,26 +53,39 @@ const deleteTranslations = createAsyncThunk(
   }
 });
 
-const downloadJSON = createAsyncThunk("downloadJSON", async (key, { rejectWithValue }) => {
+const downloadJSON = createAsyncThunk(
+  "translations/downloadJSON", async (key, { rejectWithValue }) => {
   try {
-    const response = await apiClient.post(
-      "/json-download",
-      { key },
-      { responseType: "blob" }
-    );
+    // If "all", expect JSON (not blob)
+    if (key.key === "all") {
+      const response = await apiClient.post("/json-download", { key: "all" });
 
-    // Trigger download
-    const blob = new Blob([response.data], { type: "application/json" });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = key.key === "all" ? "translations.zip" : `${key.key}.json`;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    window.URL.revokeObjectURL(url);
+      const allLangData = response.data; // Object like { en: {}, ta: {}, hi: {} }
+      const zip = new JSZip();
+
+      for (const [lang, translations] of Object.entries(allLangData)) {
+        zip.file(`${lang}.json`, JSON.stringify(translations, null, 2));
+      }
+
+      const blob = await zip.generateAsync({ type: "blob" });
+      saveAs(blob, "translations.zip");
+    } else {
+      // For individual language
+      const response = await apiClient.post("/json-download", { key: key.key }, { responseType: "blob" });
+
+      const blob = new Blob([response.data], { type: "application/json" });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${key.key}.json`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+    }
   } catch (error) {
-    return rejectWithValue(error.response?.data?.message || "Failed to download");
+    console.error("Download failed:", error);
+    return rejectWithValue(error.response?.data?.message || "Download failed");
   }
 });
 

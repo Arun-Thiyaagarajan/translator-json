@@ -67,6 +67,7 @@ const AntTable = () => {
   const handleDownload = (key) => {
     setDownloadingKey(key);
     dispatch(downloadJSON({ key }))
+      .unwrap()
       .then((response) => {
         setDownloadingKey(null);
         showMessage(EAntStatusMessage.SUCCESS, 'Downloaded Successfully');
