@@ -1,13 +1,13 @@
 import { Input, Tooltip } from "antd";
 import { CircleHelp } from "lucide-react";
 import { MdOutlineContentCopy } from "react-icons/md";
-import { useAntMessage } from "../../hooks/useAntMessage";
-import { EAntStatusMessage } from "../../enums";
+import { useAntMessage } from "@hooks/useAntMessage";
+import { EAntStatusMessage } from "@enums/index";
 
 const AntInput = ({
-  label, name, valueChange, value='', placeholder, prefix, suffix, addonBefore,
+  label, name, valueChange, value='', placeholder, prefix, suffix='', addonBefore,
   shouldRestrictSpace=false, showHelpIcon=false, helpText, helpTextPlacement,
-  disabled=false, showCopy=false
+  disabled=false, showCopy=false, required=false
 }) => {
   const { showMessage } = useAntMessage();
   
@@ -34,23 +34,26 @@ const AntInput = ({
   };
   
   const computedSuffix = showCopy && !disabled ? (
-    <span className="copy-icon-wrapper">
-      <Tooltip title='Copy to Clipboard'>
-        <span
-          onClick={handleCopy}
-          style={{ visibility: value ? 'visible' : 'hidden', cursor: value ? 'pointer' : 'default' }}
-        >
-          <MdOutlineContentCopy className="text-primary" />
-        </span>
-      </Tooltip>
-    </span>
-  ) : suffix;
+    <Tooltip title='Copy to Clipboard'>
+      <span
+        onClick={handleCopy}
+        style={{ visibility: value ? 'visible' : 'hidden', cursor: value ? 'pointer' : 'default' }}
+      >
+        <MdOutlineContentCopy className="text-primary" />
+      </span>
+    </Tooltip>
+  ) : (
+      <span></span>   //suffix should not be dynamically rendered
+  );
   
 
   return (
     <div className="form-group w-full">
       <div className="label flex items-center mb-1">
-        <span className="text-primary-content font-semibold capitalize text-sm">{label}</span>
+        <span className="text-primary-content font-semibold capitalize text-sm" title={required && 'Required Field'}>
+          {label}
+          { required && <span className="text-error">*</span> }
+        </span>
         {showHelpIcon &&
           <Tooltip title={helpText ?? ''} placement={helpTextPlacement ?? "top"}>
             <CircleHelp className="mr-2 text-primary" size={18} />

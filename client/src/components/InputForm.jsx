@@ -3,7 +3,7 @@ import { Form } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { Spin } from "antd";
 import { AntInput, CustomButton } from "@components/form-inputs/index";
-import { EAntStatusMessage, ELanguages } from "@enums/index";
+import { EAntStatusMessage, ELanguageKeys, ELanguages } from "@enums/index";
 import { addTranslations, fetchTranslations, translateIt, updateTranslations } from "@store/translationThunks";
 import { useAntMessage } from "@hooks/useAntMessage";
 
@@ -22,6 +22,8 @@ const InputForm = () => {
   const [teluguTranslate, setTeluguTranslate] = useState('');
   const [kannadaTranslate, setKannadaTranslate] = useState('');
   const [hindiTranslate, setHindiTranslate] = useState('');
+
+  const allFields = [key, englishTranslate, tamilTranslate, malayalamTranslate, teluguTranslate, kannadaTranslate, hindiTranslate];
 
   const [loading, setLoading] = useState(false);
   const formRef = useRef();
@@ -59,6 +61,15 @@ const InputForm = () => {
     event.preventDefault();
     const formData = new FormData(event.target);
     const data = Object.fromEntries(formData);
+
+    // TODO: Manual validation for all required fields
+    // const requiredFields = Object.values(ELanguageKeys);
+    // const missingFields = requiredFields.filter(field => !data[field]?.trim());
+
+    if (allFields.includes('')) {
+      showMessage(EAntStatusMessage.ERROR, "Fill all required fields");
+      return;
+    }
 
     setLoading(true);
 
@@ -150,6 +161,7 @@ const InputForm = () => {
               helpTextPlacement="right"
               showCopy={true}
               disabled={isTranslating || loading}
+              required={true}
             />
           </div>
 
@@ -165,6 +177,7 @@ const InputForm = () => {
               placeholder="English Translation"
               showCopy={true}
               disabled={isTranslating || loading}
+              required={true}
             />
           </div>
 
@@ -177,6 +190,7 @@ const InputForm = () => {
               valueChange={setTamilTranslate}
               placeholder="Tamil Translation"
               showCopy={true}
+              required={true}
             />
           </div>
 
@@ -189,6 +203,7 @@ const InputForm = () => {
               valueChange={setMalayalamTranslate}
               placeholder="Malayalam Translation"
               showCopy={true}
+              required={true}
             />
           </div>
 
@@ -201,6 +216,7 @@ const InputForm = () => {
               valueChange={setTeluguTranslate}
               placeholder="Telugu Translation"
               showCopy={true}
+              required={true}
             />
           </div>
 
@@ -213,6 +229,7 @@ const InputForm = () => {
               valueChange={setKannadaTranslate}
               placeholder="Kannada Translation"
               showCopy={true}
+              required={true}
             />
           </div>
 
@@ -225,6 +242,7 @@ const InputForm = () => {
               valueChange={setHindiTranslate}
               placeholder="Hindi Translation"
               showCopy={true}
+              required={true}
             />
           </div>
         </div>
@@ -248,7 +266,7 @@ const InputForm = () => {
               size="w-full sm:w-auto"
               bgcolor="btn-neutral"
               color='text-white'
-              disabled={loading || key === ''}
+              disabled={isTranslating || loading}
           />
           }
           {(selected || englishTranslate || key) && (
@@ -258,6 +276,7 @@ const InputForm = () => {
               size="w-full sm:w-auto"
               bgcolor="btn-info btn-outline"
               onClick={resetForm}
+              disabled={isTranslating}
             />
           )}
         </div>
