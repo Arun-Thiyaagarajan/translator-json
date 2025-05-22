@@ -251,9 +251,9 @@ const InputForm = () => {
               disabled={loading || key === ''}
           />
           }
-          {selected && (
+          {(selected || englishTranslate || key) && (
             <CustomButton
-              text="Cancel Edit"
+              text={selected ? 'Cancel Edit' : 'Clear'}
               color="hover:text-white"
               size="w-full sm:w-auto"
               bgcolor="btn-info btn-outline"
