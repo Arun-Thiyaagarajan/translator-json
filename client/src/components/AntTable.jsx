@@ -177,7 +177,10 @@ const AntTable = () => {
       {
         title: ELanguages[langKey], // e.g. 'Tamil', 'Malayalam'
         dataIndex: dataKey,
-        key: dataKey
+        key: dataKey,
+        ellipsis: {
+          showTitle: false,
+        },
       },
       getColumnSearchProps(dataKey),
       makeCopyOnCell(dataKey)
@@ -200,6 +203,9 @@ const AntTable = () => {
         dataIndex: ELanguageKeys.english,
         key: ELanguageKeys.english,
         fixed: !isMobile ? "left" : undefined,
+        ellipsis: {
+          showTitle: true,
+        },
       },
       getColumnSearchProps(ELanguageKeys.english),
       makeCopyOnCell(ELanguageKeys.english),
