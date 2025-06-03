@@ -154,10 +154,9 @@ const InputForm = () => {
                 localStorage.setItem('Translation_Key', value)
               }}
               placeholder="Enter the Key"
-              shouldRestrictSpace={true}
               showHelpIcon={true}
               helpText="A unique key used in the code to switch between translations. 
-              For example, using 'aadhaarCard' will show the text in the selected language automatically. Make sure, space are not allowed."
+              For example, using 'Aadhaar Card' will show the text in the selected language automatically."
               helpTextPlacement="right"
               showCopy={true}
               disabled={isTranslating || loading}
